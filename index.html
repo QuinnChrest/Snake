@@ -2,6 +2,26 @@
 <html>
   <head>
     <script src="https://pixijs.download/release/pixi.js"></script>
+    <style>
+      canvas {
+        margin: auto;
+        display: block;
+      }
+
+      .header {
+        text-align: center;
+        font-family: "Courier New", Courier, monospace;
+        font-size: xx-large;
+        font-weight: bold;
+      }
+
+      .score {
+        text-align: center;
+        font-family: "Courier New", Courier, monospace;
+        font-size: x-large;
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
     <script>
@@ -10,6 +30,7 @@
       let moveDir;
       let snake = [];
       let pellet;
+      let score = 0;
       let gameOver = false;
 
       // enum used for tracking the last direction pressed
@@ -37,6 +58,9 @@
 
         // create pellet that increases the length of the snake
         createPellet();
+
+        // initialize score display
+        window.document.querySelector(".score").innerHTML = score;
 
         // add key down event listener to handle key presses
         window.addEventListener("keydown", keysDown);
@@ -179,6 +203,7 @@
 
         // if snake head collides with pellet then move pellet and add to the snakes body
         if (snake[0].x == pellet.x && snake[0].y == pellet.y) {
+          updateScore();
           placePellet();
           snake.push(createSnakeBody(x, y));
         }
@@ -205,9 +230,17 @@
         }
       }
 
+      // increment score and update html
+      function updateScore() {
+        score++;
+        window.document.querySelector(".score").innerHTML = score;
+      }
+
       function endGame() {
         gameOver = true;
       }
     </script>
+    <div class="header">SNAKE</div>
+    <div class="score"></div>
   </body>
 </html>
