@@ -3,9 +3,13 @@
   <head>
     <script src="https://pixijs.download/release/pixi.js"></script>
     <style>
+      html {
+        background-color: lightgreen;
+      }
       canvas {
         margin: auto;
         display: block;
+        border: medium dashed green;
       }
 
       .header {
@@ -28,10 +32,11 @@
       // set local variables needed
       let app;
       let moveDir;
-      let snake = [];
+      let snake;
       let pellet;
-      let score = 0;
+      let score;
       let gameOver = false;
+      let gameOverText;
 
       // enum used for tracking the last direction pressed
       const direction = {
@@ -53,14 +58,8 @@
         // add app to the DOM
         document.body.appendChild(app.view);
 
-        // create the snake represented as an array
-        snake.push(createSnakeBody(0, 0));
-
-        // create pellet that increases the length of the snake
-        createPellet();
-
-        // initialize score display
-        window.document.querySelector(".score").innerHTML = score;
+        // initialize variables
+        setInitialValues();
 
         // add key down event listener to handle key presses
         window.addEventListener("keydown", keysDown);
@@ -69,6 +68,19 @@
         app.ticker.maxFPS = 1;
         app.ticker.add(gameLoop);
       };
+
+      function setInitialValues() {
+        // create the snake represented as an array
+        snake = [];
+        snake.push(createSnakeBody(0, 0));
+
+        // create pellet that increases the length of the snake
+        createPellet();
+
+        // initialize score display
+        score = 0;
+        window.document.querySelector(".score").innerHTML = score;
+      }
 
       // key down event handler
       function keysDown(e) {
@@ -110,6 +122,22 @@
               moveDir = direction.Right;
             }
             break;
+        }
+
+        if (gameOver) {
+          snake.forEach((element) => {
+            app.stage.removeChild(element);
+          });
+
+          app.stage.removeChild(pellet);
+
+          app.stage.removeChild(gameOverText);
+
+          moveDir = null;
+
+          setInitialValues();
+
+          gameOver = false;
         }
       }
 
@@ -238,6 +266,10 @@
 
       function endGame() {
         gameOver = true;
+
+        gameOverText = new PIXI.Text("GAME OVER");
+
+        app.stage.addChild(gameOverText);
       }
     </script>
     <div class="header">SNAKE</div>
