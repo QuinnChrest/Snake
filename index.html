@@ -10,6 +10,7 @@
       let moveDir;
       let snake = [];
       let pellet;
+      let gameOver = false;
 
       // enum used for tracking the last direction pressed
       const direction = {
@@ -51,19 +52,39 @@
         switch (e.keyCode) {
           case 87:
           case 38:
-            moveDir = direction.Up;
+            if (
+              snake.length == 1 ||
+              (snake.length > 1 && moveDir != direction.Down)
+            ) {
+              moveDir = direction.Up;
+            }
             break;
           case 40:
           case 83:
-            moveDir = direction.Down;
+            if (
+              snake.length == 1 ||
+              (snake.length > 1 && moveDir != direction.Up)
+            ) {
+              moveDir = direction.Down;
+            }
             break;
           case 65:
           case 37:
-            moveDir = direction.Left;
+            if (
+              snake.length == 1 ||
+              (snake.length > 1 && moveDir != direction.Right)
+            ) {
+              moveDir = direction.Left;
+            }
             break;
           case 39:
           case 68:
-            moveDir = direction.Right;
+            if (
+              snake.length == 1 ||
+              (snake.length > 1 && moveDir != direction.Left)
+            ) {
+              moveDir = direction.Right;
+            }
             break;
         }
       }
@@ -108,7 +129,9 @@
 
       // game loop
       function gameLoop() {
-        moveHead();
+        if (!gameOver) {
+          moveHead();
+        }
       }
 
       // move head of snake
@@ -122,27 +145,35 @@
           case direction.Up:
             if (snake[0].y > 0) {
               snake[0].y -= 50;
+            } else {
+              endGame();
             }
             break;
           case direction.Down:
             if (snake[0].y < 550) {
               snake[0].y += 50;
+            } else {
+              endGame();
             }
             break;
           case direction.Left:
             if (snake[0].x > 0) {
               snake[0].x -= 50;
+            } else {
+              endGame();
             }
             break;
           case direction.Right:
             if (snake[0].x < 550) {
               snake[0].x += 50;
+            } else {
+              endGame();
             }
             break;
         }
 
         // if snake has a body then move the body as well
-        if (snake.length > 1) {
+        if (snake.length > 1 && !gameOver) {
           moveBody(1, x, y);
         }
 
@@ -163,10 +194,19 @@
         snake[index].x = x;
         snake[index].y = y;
 
-        // move next part of the body if one exists
+        // check if snake head collided with body
+        if (snake[0].x == snake[index].x && snake[0].y == snake[index].y) {
+          endGame();
+        }
+
         if (++index < snake.length) {
+          // move next part of the body if one exists
           moveBody(index, old_x, old_y);
         }
+      }
+
+      function endGame() {
+        gameOver = true;
       }
     </script>
   </body>
