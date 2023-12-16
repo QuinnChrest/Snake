@@ -4,7 +4,7 @@
     <script src="https://pixijs.download/release/pixi.js"></script>
     <style>
       html {
-        background-color: lightgreen;
+        background-color: #789456;
       }
       canvas {
         margin: auto;
@@ -29,12 +29,12 @@
   </head>
   <body>
     <script>
-      // set local variables needed
+      // local variables
       let app;
       let moveDir;
-      let snake;
+      let snake = [];
       let pellet;
-      let score;
+      let score = 0;
       let gameOver = false;
       let gameOverText;
 
@@ -45,6 +45,8 @@
         Left: 2,
         Right: 3,
       };
+
+      /* SETUP */
 
       // on window load initialize game
       window.onload = function () {
@@ -62,7 +64,7 @@
         setInitialValues();
 
         // add key down event listener to handle key presses
-        window.addEventListener("keydown", keysDown);
+        window.addEventListener("keydown", keyDown);
 
         // set max game fps and initiate game loop
         app.ticker.maxFPS = 1;
@@ -70,20 +72,27 @@
       };
 
       function setInitialValues() {
-        // create the snake represented as an array
-        snake = [];
-        snake.push(createSnakeBody(0, 0));
+        // create the snake
+        createSnakeBody(0, 0);
 
         // create pellet that increases the length of the snake
         createPellet();
 
         // initialize score display
-        score = 0;
         window.document.querySelector(".score").innerHTML = score;
       }
 
+      function cleanUp() {
+        score = 0;
+        app.stage.removeChild(pellet);
+        snake.forEach((sprite) => app.stage.removeChild(sprite));
+        snake = [];
+        app.stage.removeChild(gameOverText);
+        moveDir = null;
+      }
+
       // key down event handler
-      function keysDown(e) {
+      function keyDown(e) {
         // based on what key is pressed set the direction to move the snake head
         switch (e.keyCode) {
           case 87:
@@ -124,22 +133,17 @@
             break;
         }
 
+        // if we are in a game over state then pressing any key will reset the game
         if (gameOver) {
-          snake.forEach((element) => {
-            app.stage.removeChild(element);
-          });
-
-          app.stage.removeChild(pellet);
-
-          app.stage.removeChild(gameOverText);
-
-          moveDir = null;
+          cleanUp();
 
           setInitialValues();
 
           gameOver = false;
         }
       }
+
+      /* PELLET */
 
       // creates a pellet and adds it as a sprite to the game
       function createPellet() {
@@ -165,6 +169,8 @@
         pellet.y = Math.floor(Math.random() * 12) * 50;
       }
 
+      /* SNAKE */
+
       // add a piece of the snake at the x y coordinates provided
       function createSnakeBody(x, y) {
         let sprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
@@ -176,14 +182,7 @@
 
         app.stage.addChild(sprite);
 
-        return sprite;
-      }
-
-      // game loop
-      function gameLoop() {
-        if (!gameOver) {
-          moveHead();
-        }
+        snake.push(sprite);
       }
 
       // move head of snake
@@ -233,7 +232,7 @@
         if (snake[0].x == pellet.x && snake[0].y == pellet.y) {
           updateScore();
           placePellet();
-          snake.push(createSnakeBody(x, y));
+          createSnakeBody(snake[snake.length - 1].x, snake[snake.length - 1].y);
         }
       }
 
@@ -255,6 +254,15 @@
         if (++index < snake.length) {
           // move next part of the body if one exists
           moveBody(index, old_x, old_y);
+        }
+      }
+
+      /* GAME */
+
+      // game loop
+      function gameLoop() {
+        if (!gameOver) {
+          moveHead();
         }
       }
 
