@@ -73,6 +73,7 @@
         app.ticker.add(gameLoop);
       };
 
+      // set initial values and sprites
       function setInitialValues() {
         // create the snake
         createSnakeBody(0, 0);
@@ -84,6 +85,7 @@
         window.document.querySelector(".score").innerHTML = score;
       }
 
+      // remove sprites from app and reset initial values
       function cleanUp() {
         let children = app.stage.children.slice();
         children.forEach((element) => app.stage.removeChild(element));
@@ -163,12 +165,30 @@
         placePellet();
       }
 
-      // moves the pellet to a randome position on the game grid
+      // moves the pellet to a random unique position on the game grid
       function placePellet() {
-        // the game is based on a 12x12 grid with each grid square being 50x50 pixels
-        // the math function below gets a random number between 0 - 11 and multiplies it by 50 to get the top left corner coordinate
-        pellet.x = Math.floor(Math.random() * 12) * 50;
-        pellet.y = Math.floor(Math.random() * 12) * 50;
+        let tempX = 0;
+        let tempY = 0;
+        let unique = false;
+
+        // loop until you get a position for the pellet that is not inside the snake
+        while (!unique) {
+          // the game is based on a 12x12 grid with each grid square being 50x50 pixels
+          // the math function below gets a random number between 0 - 11 and multiplies it by 50 to get the top left corner coordinate
+          tempX = Math.floor(Math.random() * 12) * 50;
+          tempY = Math.floor(Math.random() * 12) * 50;
+
+          unique = true;
+
+          snake.forEach((sprite) => {
+            if (unique && sprite.x == tempX && sprite.y == tempY) {
+              unique = false;
+            }
+          });
+        }
+
+        pellet.x = tempX;
+        pellet.y = tempY;
       }
 
       /* SNAKE */
@@ -194,35 +214,16 @@
         let y = snake[0].y;
 
         // based on the current move direction move the head in that direction
-        switch (moveDir) {
-          case direction.Up:
-            if (snake[0].y > 0) {
-              snake[0].y -= 50;
-            } else {
-              endGame();
-            }
-            break;
-          case direction.Down:
-            if (snake[0].y < 550) {
-              snake[0].y += 50;
-            } else {
-              endGame();
-            }
-            break;
-          case direction.Left:
-            if (snake[0].x > 0) {
-              snake[0].x -= 50;
-            } else {
-              endGame();
-            }
-            break;
-          case direction.Right:
-            if (snake[0].x < 550) {
-              snake[0].x += 50;
-            } else {
-              endGame();
-            }
-            break;
+        if (moveDir == direction.Up && snake[0].y > 0) {
+          snake[0].y -= 50;
+        } else if (moveDir == direction.Down && snake[0].y < 550) {
+          snake[0].y += 50;
+        } else if (moveDir == direction.Left && snake[0].x > 0) {
+          snake[0].x -= 50;
+        } else if (moveDir == direction.Right && snake[0].x < 550) {
+          snake[0].x += 50;
+        } else if (moveDir != null) {
+          endGame();
         }
 
         // if snake has a body then move the body as well
@@ -274,10 +275,11 @@
         window.document.querySelector(".score").innerHTML = score;
       }
 
+      // set game over values
       function endGame() {
         gameOver = true;
 
-        // game over text
+        // add game over text
         let gameOverText = new PIXI.Text(
           "GAME OVER",
           new PIXI.TextStyle({
