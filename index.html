@@ -40,6 +40,9 @@
       let score = 0;
       let gameOver = false;
 
+      // limit the speed of the game
+      let gameLimiter = false;
+
       // enum used for tracking the last direction pressed
       const direction = {
         Up: 0,
@@ -103,7 +106,7 @@
           case 38:
             if (
               snake.length == 1 ||
-              (snake.length > 1 && moveDir != direction.Down)
+              (snake.length > 1 && snake[1].y != snake[0].y - 50)
             ) {
               moveDir = direction.Up;
             }
@@ -112,7 +115,7 @@
           case 83:
             if (
               snake.length == 1 ||
-              (snake.length > 1 && moveDir != direction.Up)
+              (snake.length > 1 && snake[1].y != snake[0].y + 50)
             ) {
               moveDir = direction.Down;
             }
@@ -121,7 +124,7 @@
           case 37:
             if (
               snake.length == 1 ||
-              (snake.length > 1 && moveDir != direction.Right)
+              (snake.length > 1 && snake[1].x != snake[0].x - 50)
             ) {
               moveDir = direction.Left;
             }
@@ -130,7 +133,7 @@
           case 68:
             if (
               snake.length == 1 ||
-              (snake.length > 1 && moveDir != direction.Left)
+              (snake.length > 1 && snake[1].x != snake[0].x + 50)
             ) {
               moveDir = direction.Right;
             }
@@ -264,14 +267,63 @@
 
       // game loop
       function gameLoop() {
-        if (!gameOver) {
-          moveHead();
+        // can't figure out how to slow the game further than setting the max fps to 1 so cut the speed in half by only moving every other loop
+        if (gameLimiter) {
+          if (!gameOver) {
+            moveHead();
+          }
+          gameLimiter = false;
+        } else {
+          gameLimiter = true;
         }
       }
 
-      // increment score and update html
+      // increment score based on what ring it's on and update html
       function updateScore() {
-        score++;
+        if (
+          pellet.y >= 250 &&
+          pellet.y <= 300 &&
+          pellet.x >= 250 &&
+          pellet.x <= 300
+        ) {
+          score += snake.length * 1;
+        } else if (
+          pellet.y >= 200 &&
+          pellet.y <= 350 &&
+          pellet.x >= 200 &&
+          pellet.x <= 350
+        ) {
+          score += snake.length * 2;
+        } else if (
+          pellet.y >= 150 &&
+          pellet.y <= 400 &&
+          pellet.x >= 150 &&
+          pellet.x <= 400
+        ) {
+          score += snake.length * 3;
+        } else if (
+          pellet.y >= 100 &&
+          pellet.y <= 450 &&
+          pellet.x >= 100 &&
+          pellet.x <= 450
+        ) {
+          score += snake.length * 4;
+        } else if (
+          pellet.y >= 50 &&
+          pellet.y <= 500 &&
+          pellet.x >= 50 &&
+          pellet.x <= 500
+        ) {
+          score += snake.length * 5;
+        } else if (
+          pellet.y >= 0 &&
+          pellet.y <= 550 &&
+          pellet.x >= 0 &&
+          pellet.x <= 550
+        ) {
+          score += snake.length * 6;
+        }
+
         window.document.querySelector(".score").innerHTML = score;
       }
 
