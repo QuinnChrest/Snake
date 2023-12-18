@@ -35,6 +35,11 @@
         font-weight: bold;
         color: white;
       }
+
+      .header,
+      .score {
+        text-shadow: 4px 4px black;
+      }
     </style>
   </head>
   <body>
@@ -46,6 +51,7 @@
       let pellet;
       let score = 0;
       let gameOver = false;
+      let instructionsText;
 
       // limit the speed of the game
       let gameLimiter = false;
@@ -93,6 +99,23 @@
 
         // initialize score display
         window.document.querySelector(".score").innerHTML = score;
+
+        instructionsText = new PIXI.Text(
+          "WASD or Arrow Keys",
+          new PIXI.TextStyle({
+            dropShadow: true,
+            fill: "white",
+            fontFamily: "Courier New",
+            fontStyle: "bold",
+          })
+        );
+
+        instructionsText.anchor.x = 0.5;
+        instructionsText.anchor.y = 0.5;
+        instructionsText.x = 300;
+        instructionsText.y = 300;
+
+        app.stage.addChild(instructionsText);
       }
 
       // remove sprites from app and reset initial values
@@ -107,6 +130,11 @@
 
       // key down event handler
       function keyDown(e) {
+        if (instructionsText != null) {
+          app.stage.removeChild(instructionsText);
+          instructionsText == null;
+        }
+
         // based on what key is pressed set the direction to move the snake head
         switch (e.keyCode) {
           case 87:
