@@ -1,4 +1,4 @@
-![image](https://github.com/QuinnChrest/Snake/assets/30156594/6cd4d684-dde4-45d3-9bec-7057e37958ff)
+![Snake](https://github.com/QuinnChrest/Snake/assets/30156594/80d392c4-423a-4515-adca-d687c9c56560)
 
 I wanted to challenge myself to create a simple game in Javascript. First I needed to decide what libraries I was going to use. I landed on [PixiJS](https://pixijs.com/) to handle rendering and game ticker. Since the plan is to make a simple game I landed on recreating Snake. Solving how the snake moves across the board with the elements of its body following its head interested me. Below I will touch on some of the basic functionality of the game.
 
